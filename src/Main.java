@@ -18,6 +18,9 @@ import java.util.logging.Logger;
  *
  * @author shakeel
  */
+
+//sampleinputfile.txt 3 outputfile.txt
+
 public class Main {
 
     static int[] point;
@@ -27,6 +30,9 @@ public class Main {
     static double[] subset;
     static int filterSize;
     static String outputFileName;
+    
+    //Timing
+    static long executionTime;
 
     static int numLines;
 
@@ -76,9 +82,16 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //Garbage collection
+        System.gc();
+        
+        
+        
         MedianFilter(data);
         printToFile(outputFileName);
 
+        
+        System.out.println("The program took " + executionTime + " milliseconds");
 //        ?????????????????????????
 //        for (int i = 0; i < 10; i++) {
 //            //System.out.println(data[i]);
@@ -88,8 +101,12 @@ public class Main {
 
     public static void MedianFilter(double[] in) {
 
+        long startTime = System.currentTimeMillis();
+        
         outputData[0] = data[0];
 
+        
+        
         for (int j = 1; j < numLines - 1; j++) {
 
             subset = new double[filterSize];
@@ -104,6 +121,9 @@ public class Main {
             //System.out.println(Arrays.toString(subset));
 
         }
+        long endTime = System.currentTimeMillis();
+        
+        executionTime = endTime - startTime;
 
     }
 
