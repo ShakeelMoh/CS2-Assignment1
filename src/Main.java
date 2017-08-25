@@ -18,24 +18,33 @@ import java.util.logging.Logger;
  *
  * @author shakeel
  */
-
 //sampleinputfile.txt 3 outputfile.txt
-
 public class Main {
 
+    
     static int[] point;
     static double[] data;
     static double[] outputData;
 
     static double[] subset;
     static int filterSize;
-    static String outputFileName;
     
-    //Timing
-    static long executionTime;
+    static String outputFileName;
 
     static int numLines;
 
+    static long startTime = 0;
+
+    private static void tick() {
+        startTime = System.currentTimeMillis();
+    }
+
+    private static float toc() {
+        return (System.currentTimeMillis() - startTime) / 1000.0f;
+    }
+
+    
+    //PSVM populates two arrays with points and their data
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
@@ -84,14 +93,11 @@ public class Main {
 
         //Garbage collection
         System.gc();
-        
-        
-        
+
         MedianFilter(data);
         printToFile(outputFileName);
 
-        
-        System.out.println("The program took " + executionTime + " milliseconds");
+        //System.out.println("The program took " + executionTime + " milliseconds");
 //        ?????????????????????????
 //        for (int i = 0; i < 10; i++) {
 //            //System.out.println(data[i]);
@@ -101,12 +107,10 @@ public class Main {
 
     public static void MedianFilter(double[] in) {
 
-        long startTime = System.currentTimeMillis();
-        
+        tick();
+
         outputData[0] = data[0];
 
-        
-        
         for (int j = 1; j < numLines - 1; j++) {
 
             subset = new double[filterSize];
@@ -121,9 +125,9 @@ public class Main {
             //System.out.println(Arrays.toString(subset));
 
         }
-        long endTime = System.currentTimeMillis();
-        
-        executionTime = endTime - startTime;
+        float time = toc();
+        System.out.println("Run took " + time + " seconds");
+
 
     }
 
@@ -134,11 +138,11 @@ public class Main {
             writer = new PrintWriter(file, "UTF-8");
 
             writer.println(numLines);
-            
+
             for (int i = 0; i < outputData.length; i++) {
-                
+
                 writer.append(i + " " + outputData[i] + "\n");
-                
+
             }
 
             writer.close();
