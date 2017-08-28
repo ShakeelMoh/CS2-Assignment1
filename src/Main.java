@@ -1,4 +1,13 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
+/**
+ *
+ * @author User
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -46,8 +55,9 @@ public class Main {
         return (System.currentTimeMillis() - startTime) / 1000.0f;
     }
 
-    static double invokeParallel(double[] arr) {
-        return fjPool.invoke(new FilterThread(arr, 0, arr.length));
+    private static void invokeParallel(double[] arr) {
+        
+        fjPool.invoke(new FilterThread(arr, 0, arr.length));
     }
 
     //PSVM populates two arrays with points and their data
@@ -105,15 +115,21 @@ public class Main {
         outputData[numLines - 1] = data[numLines - 1];
 
         //------------------------------------------------------------------------------------------------------
+        int proccessors = Runtime.getRuntime().availableProcessors(); 
+       
+        System.out.println(proccessors);
         tick();
         //MedianFilter(data);
-        invokeParallel(data);
+        //System.out.println("Threads before: " + Thread.activeCount());
+        
+        fjPool.invoke(new FilterThread(data, 0, data.length));
+        
+        //invokeParallel(data);
         //ParallelFilter(data);
 
         float time = toc();
 
         System.out.println("Run took " + time + " seconds");
-
         printToFile(outputFileName);
         //------------------------------------------------------------------------------------------------------
 
