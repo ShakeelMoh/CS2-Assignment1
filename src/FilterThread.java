@@ -16,7 +16,7 @@ public class FilterThread extends RecursiveAction {
     int lo; // arguments
     int hi;
     double[] arr;
-    static final int SEQUENTIAL_CUTOFF = 10000;
+    static final int SEQUENTIAL_CUTOFF = 1000;
 
     //int ans = 0; // result 
     FilterThread(double[] a, int l, int h) {
@@ -27,10 +27,12 @@ public class FilterThread extends RecursiveAction {
 
     @Override
     protected void compute() {// return answer - instead of run
-        //System.out.println("Threads currently " + Thread.activeCount());
+        
         
         if ((hi - lo) < SEQUENTIAL_CUTOFF) {
-            //System.out.println("lo is "  lo  " hi is "  hi);
+            //System.out.println("lo is "  + lo  + " hi is " + hi);
+            //System.out.println("Threads currently " + Thread.activeCount());
+            
             Main.ParallelFilter(arr, lo, hi);
             
 

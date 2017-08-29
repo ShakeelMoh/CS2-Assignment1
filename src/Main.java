@@ -45,7 +45,7 @@ public class Main {
     static long startTime = 0;
 
     //ForkJoin Framework
-    static final ForkJoinPool fjPool = new ForkJoinPool();
+    static final ForkJoinPool fjPool = new ForkJoinPool(3);
 
     private static void tick() {
         startTime = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class Main {
         return (System.currentTimeMillis() - startTime) / 1000.0f;
     }
 
-    private static void invokeParallel(double[] arr) {
+    public static void invokeParallel(double[] arr) {
         
         fjPool.invoke(new FilterThread(arr, 0, arr.length));
     }
@@ -111,23 +111,38 @@ public class Main {
         System.gc();
 
         //Setting boundaries
-        outputData[0] = data[0];
-        outputData[numLines - 1] = data[numLines - 1];
+        
+        for (int i = 0; i < (filterSize-1)/2; i++) {
+            outputData[i] = data[i];
+            outputData[numLines - ((filterSize-1)/2) + i] = data[numLines - ((filterSize-1)/2) + i];
+        }
+        //outputData[0] = data[0];
+        //outputData[numLines - 1] = data[numLines - 1];
 
         //------------------------------------------------------------------------------------------------------
         int proccessors = Runtime.getRuntime().availableProcessors(); 
        
-        System.out.println(proccessors);
+        System.out.println("Number of available processors: " + proccessors);
+        System.out.println("Sequential algorithm...\n");
         tick();
-        //MedianFilter(data);
+        MedianFilter(data);
+        
+        float time = toc();
+        
+        
+        System.out.println("Run took " + time + " seconds\n");
         //System.out.println("Threads before: " + Thread.activeCount());
         
+        System.gc();
+        
+        System.out.println("Parallel algorithm...\n");
+        tick();
         fjPool.invoke(new FilterThread(data, 0, data.length));
         
         //invokeParallel(data);
         //ParallelFilter(data);
 
-        float time = toc();
+        time = toc();
 
         System.out.println("Run took " + time + " seconds");
         printToFile(outputFileName);
@@ -136,11 +151,12 @@ public class Main {
     }
 
     public static void MedianFilter(double[] in) {
-
-        for (int j = 1; j < numLines - 1; j++) {
+        int buffer = (filterSize-1)/2;
+        for (int j = buffer; j < numLines - buffer; j++) {
 
             subset = new double[filterSize];
             //System.out.println(j);
+            
             subset = Arrays.copyOfRange(in, j - ((filterSize - 1) / 2), j + ((filterSize + 1) / 2));
 
             Arrays.sort(subset);
@@ -157,11 +173,14 @@ public class Main {
     public static void ParallelFilter(double[] in, int lo, int hi) {
 
         //invokeParallel(in);
+        
+        int buffer = (filterSize-1)/2;
+        
         if (lo == 0) {
-            lo += 1;
+            lo += buffer;
         }
         if (hi == in.length) {
-            hi -= 1;
+            hi -= buffer;
         }
 
         for (int j = lo; j < hi; j++) {
